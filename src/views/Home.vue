@@ -86,8 +86,8 @@ export default {
     },
   },
   async mounted() {
-    // await axios.get("/api/").then((response) => (this.info = response));
-    // console.log(this.data);
+    await axios.get("/api/").then((response) => (this.data = response));
+    console.log(this.data);
 
     const response = await axios.get("/api/");
     this.recipes = response.data.name((a, b) => {
