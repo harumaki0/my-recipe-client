@@ -17,9 +17,9 @@
         </v-row>
         <v-row>
           <table>
-            <div id="app">
+            <!-- <div id="app">
               {{ info }}
-            </div>
+            </div> -->
             <tr v-for="recipe in recipesDisplay" :key="recipe.id">
               <td>
                 <router-link :to="to(recipe)">{{ recipe.name }}</router-link>
@@ -54,7 +54,7 @@ export default {
       recipes: undefined,
       offset: 0,
       text: "",
-      info: null,
+      // info: null,
     };
   },
   computed: {
@@ -86,16 +86,16 @@ export default {
     },
   },
   async mounted() {
-    await axios.get("/api/").then((response) => (this.info = response));
-    console.log(this.data);
+    // await axios.get("/api/").then((response) => (this.info = response));
+    // console.log(this.data);
 
-    // const response = await axios.get("/api/");
-    // this.recipes = response.data.name((a, b) => {
-    //   console.log(a.name, b.name);
-    //   if (a.name < b.name) {
-    //     return;
-    //   }
-    // });
+    const response = await axios.get("/api/");
+    this.recipes = response.data.name((a, b) => {
+      console.log(a.name, b.name);
+      if (a.name < b.name) {
+        return;
+      }
+    });
   },
 };
 </script>
