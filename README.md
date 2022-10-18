@@ -1,4 +1,4 @@
-# my-cafe-recipe-f
+# my-recipe-f
 
 ## Project setup
 

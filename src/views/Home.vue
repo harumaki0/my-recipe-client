@@ -4,7 +4,7 @@
     <v-main>
       <v-container>
         <v-row>
-          <v-col cols="4">
+          <v-col cols="7" xs="4" md="4" lg="4" xl="4">
             <v-text-field
               label="料理名検索"
               placeholder="ハンバーグ"
@@ -16,17 +16,29 @@
           </v-col>
         </v-row>
         <v-row>
-          <table>
-            <!-- <div id="app">
-              {{ info }}
-            </div> -->
-            <tr v-for="recipe in recipesDisplay" :key="recipe.id">
-              <td>
-                <router-link :to="to(recipe)">{{ recipe.name }}</router-link>
-              </td>
-            </tr>
-          </table>
+          <v-col
+            class="ma-10 list"
+            cols="4"
+            xs="3"
+            md="2"
+            lg="3"
+            xl="3"
+            v-for="recipe in recipesDisplay"
+            :key="recipe.id"
+          >
+            <router-link :to="to(recipe)">{{ recipe.name }}</router-link>
+            <img :src="recipe.image" />
+          </v-col>
         </v-row>
+        <template>
+          <div class="text-center">
+            <v-pagination
+              v-model="page"
+              :length="1"
+              @input="getNumber"
+            ></v-pagination>
+          </div>
+        </template>
       </v-container>
     </v-main>
     <Footer />
@@ -36,7 +48,7 @@
 import Header from "@/components/Header";
 import axiosBase from "axios";
 
-const PAGE_SIZE = 5;
+// const PAGE_SIZE = 5;
 const axios = axiosBase.create({
   headers: {
     "Content-Type": "application/json",
@@ -54,7 +66,10 @@ export default {
       recipes: undefined,
       offset: 0,
       text: "",
-      // info: null,
+      page: 1,
+      lists: [],
+      displayLists: [],
+      pageSize: 10,
     };
   },
   computed: {
@@ -63,7 +78,7 @@ export default {
       if (!this.recipes) {
         return display;
       }
-      for (let i = 0; i < PAGE_SIZE; ++i) {
+      for (let i = 0; i < this.recipes.length; ++i) {
         const recipe = this.recipes[i + this.offset];
         if (recipe) {
           display.push(recipe);
@@ -76,26 +91,34 @@ export default {
     to(recipe) {
       return `/recipe/${recipe.id}`;
     },
+    getNumber(number) {
+      console.log(number);
+    },
     async submitClick(event) {
-      event.preventDefault();
-      const response = await axios.get("/api/");
-      console.log(response.data);
-      this.recipes = response.data.filter((data) => {
-        return this.text.match(data.name);
-      });
+      if (this.text == "") {
+        //何もしない
+      } else {
+        console.log("false");
+        event.preventDefault();
+        const response = await axios.get("/api/recipe/", {
+        params: { page: 1 },
+        });
+        // console.log(this.text);
+        // console.log(response.data);
+        this.recipes = response.data.filter((data) => {
+          // return this.text.match(data.name);
+          return data.name.indexOf(this.text) > -1;
+        });
+        // console.log(this.recipes);
+      }
     },
   },
   async mounted() {
-    await axios.get("/api/").then((response) => (this.data = response));
-    console.log(this.data);
-
-    const response = await axios.get("/api/");
-    this.recipes = response.data.name((a, b) => {
-      console.log(a.name, b.name);
-      if (a.name < b.name) {
-        return;
-      }
+    const response = await axios.get("/api/recipe/", {
+      params: { page: 1 },
     });
+    this.recipes = response.data;
+    console.log(response);
   },
 };
 </script>
@@ -104,5 +127,20 @@ export default {
 .title h1 {
   font-size: 48px;
   color: #192e46;
+}
+
+img {
+  position: relative;
+  max-height: 200px;
+}
+
+a {
+  font-family: initial;
+  color: black !important;
+}
+
+.list {
+  position: relative;
+  left: -5vw;
 }
 </style>

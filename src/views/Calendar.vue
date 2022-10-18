@@ -24,37 +24,17 @@
                 {{ $refs.calendar.title }}
               </v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-menu bottom right>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    outlined
-                    color="grey darken-2"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    <span>{{ typeToLabel[type] }}</span>
-                    <v-icon right> mdi-menu-down </v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item @click="type = 'month'">
-                    <v-list-item-title>Month</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
             </v-toolbar>
           </v-sheet>
           <v-sheet height="600">
             <v-calendar
               ref="calendar"
               v-model="focus"
-              color="primary"
+              color="#ff5d94"
               :events="events"
               :event-color="getEventColor"
               :type="type"
               @click:event="showEvent"
-              @click:more="viewDay"
-              @click:date="viewDay"
               @change="updateRange"
             ></v-calendar>
             <v-menu
@@ -65,18 +45,12 @@
             >
               <v-card color="grey lighten-4" min-width="350px" flat>
                 <v-toolbar :color="selectedEvent.color" dark>
-                  <v-btn icon>
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
                   <v-toolbar-title
                     v-html="selectedEvent.name"
                   ></v-toolbar-title>
                   <v-spacer></v-spacer>
                   <v-btn icon>
                     <v-icon>mdi-heart</v-icon>
-                  </v-btn>
-                  <v-btn icon>
-                    <v-icon>mdi-dots-vertical</v-icon>
                   </v-btn>
                 </v-toolbar>
                 <v-card-text>
@@ -113,34 +87,13 @@ export default {
     selectedElement: null,
     selectedOpen: false,
     events: [],
-    colors: [
-      "blue",
-      "indigo",
-      "deep-purple",
-      "cyan",
-      "green",
-      "orange",
-      "grey darken-1",
-    ],
-    names: [
-      "Meeting",
-      "Holiday",
-      "PTO",
-      "Travel",
-      "Event",
-      "Birthday",
-      "Conference",
-      "Party",
-    ],
+    colors: ["#a7d5e0"],
+    names: ["料理名"],
   }),
   mounted() {
     this.$refs.calendar.checkChange();
   },
   methods: {
-    viewDay({ date }) {
-      this.focus = date;
-      this.type = "day";
-    },
     getEventColor(event) {
       return event.color;
     },
@@ -197,6 +150,7 @@ export default {
 
       this.events = events;
     },
+    //登録日付の料理名
     rnd(a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a;
     },

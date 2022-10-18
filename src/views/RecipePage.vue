@@ -1,25 +1,49 @@
 <template>
   <!-- <Header /> -->
   <v-container>
-    <v-col>
-      <v-btn>
-        <router-link to="/">もどる</router-link>
-      </v-btn>
-    </v-col>
-    <v-col>
-      <v-btn>編集</v-btn>
-      <v-btn>削除</v-btn>
-      <v-btn icon color="red" @click="isActive = !isActive">
-        <v-icon>mdi-heart</v-icon>
-      </v-btn>
-    </v-col>
-    <h1>{{ recipe.name }}</h1>
-    <div v-html="recipe.name"></div>
+    <Header />
+    <v-main>
+      <v-col>
+        <v-btn>
+          <router-link to="/">もどる</router-link>
+        </v-btn>
+      </v-col>
+      <v-col>
+        <v-btn>編集</v-btn>
+        <v-dialog v-model="dialog" width="400">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn class="ml-3" v-bind="attrs" v-on="on"> 削除 </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              このレシピを削除してもよろしいですか？
+            </v-card-title>
+            <v-card-actions>
+              <v-btn color="primary" text @click="dialog = false"> 削除 </v-btn>
+              <v-btn color="primary" text @click="dialog = false">
+                キャンセル
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-btn
+          icon
+          @click="changeFavorite()"
+          v-bind:class="{ buttoncolor: buttonState }"
+        >
+          <v-icon>mdi-heart</v-icon>
+        </v-btn>
+      </v-col>
+      <h1>{{ recipe.name }}</h1>
+      <img :src="recipe.image" />
+      <p>参照サイト：{{ recipe.reference }}</p>
+      <p>メモ：{{ recipe.memo }}</p>
+    </v-main>
   </v-container>
 </template>
 
 <script>
-// import Header from "@/components/Header";
+import Header from "@/components/Header";
 import axiosBase from "axios";
 
 const axios = axiosBase.create({
@@ -31,25 +55,39 @@ const axios = axiosBase.create({
 });
 
 export default {
-  // components: {
-  //   Header,
-  // },
+  components: {
+    Header,
+  },
   data() {
     return {
       recipe: {},
-      isActive: "#ffff",
+      dialog: false,
+      buttonState: false,
     };
   },
-  // computed: {
-  //   classColorSet() {
-  //     return {
-  //       red: this.isActive,
-  //     };
-  //   },
-  // },
-
+  methods: {
+    async changeFavorite() {
+      try {
+        this.buttonState = !this.buttonState;
+        //更新したfavoriteをDBに送る
+        const favorite = this.recipe.favorite == "0" ? "1" : "0";
+        // const favorite = this.recipe.favorite == false ? true : false;
+        const request = await axios.post("/api/recipe/update", {
+          ...this.recipe,
+          favorite,
+        });
+        console.log(this.recipe)
+        console.log(request.data);
+        this.recipe.favorite = favorite;
+      } catch (error) {
+        // console.error(error);
+      }
+    },
+  },
   async mounted() {
-    const response = await axios.get("/api/recipe/" + this.$route.params.id);
+    const response = await axios.get("/api/recipe/", {
+      params: { id: this.$route.params.id },
+    });
     this.recipe = response.data;
   },
 };
@@ -58,5 +96,9 @@ export default {
 <style>
 .red {
   color: red;
+}
+
+.buttoncolor i {
+  color: rgb(163, 67, 109) !important;
 }
 </style>
