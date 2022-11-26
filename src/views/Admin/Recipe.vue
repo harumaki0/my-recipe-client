@@ -38,6 +38,7 @@ export default {
         return display;
       }
       for (let i = 0; i < PAGE_SIZE; ++i) {
+        //★
         const recipe = this.recipes[i + this.offset];
         if (recipe) {
           display.push(recipe);

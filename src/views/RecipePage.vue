@@ -5,7 +5,8 @@
     <v-main>
       <v-col>
         <v-btn>
-          <router-link to="/">もどる</router-link>
+          <router-link to="/" v-if="!isFavorite">もどる</router-link>
+          <router-link to="/favorite" v-if="isFavorite">もどる</router-link>
         </v-btn>
       </v-col>
       <v-col>
@@ -19,7 +20,7 @@
               このレシピを削除してもよろしいですか？
             </v-card-title>
             <v-card-actions>
-              <v-btn color="primary" text @click="dialog = false"> 削除 </v-btn>
+              <v-btn color="primary" text @click="clear()"> 削除 </v-btn>
               <v-btn color="primary" text @click="dialog = false">
                 キャンセル
               </v-btn>
@@ -63,6 +64,8 @@ export default {
       recipe: {},
       dialog: false,
       buttonState: false,
+      id: "",
+      isFavorite: false,
     };
   },
   methods: {
@@ -76,15 +79,32 @@ export default {
           ...this.recipe,
           favorite,
         });
-        console.log(this.recipe)
+        console.log(this.recipe);
         console.log(request.data);
         this.recipe.favorite = favorite;
       } catch (error) {
         // console.error(error);
       }
     },
+    async clear() {
+      console.log(this.recipe.name);
+      //JSON変換
+      const myObj = {
+        id: this.recipe.id,
+      };
+      //レシピ削除
+      const myObjStr = JSON.stringify(myObj);
+      console.log(myObjStr);
+      const response = await axios.post("/api/recipe/delete", myObjStr);
+      console.log(response.data);
+      this.dialog = false;
+    },
   },
   async mounted() {
+    console.log(this.$route.path);
+    if (this.$route.path.match(/favorite/) !== null) {
+      this.isFavorite = true;
+    }
     const response = await axios.get("/api/recipe/", {
       params: { id: this.$route.params.id },
     });

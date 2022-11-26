@@ -34,8 +34,8 @@
           <div class="text-center">
             <v-pagination
               v-model="page"
-              :length="1"
-              @input="getNumber"
+              :length="pagenationLength"
+              @input="getPage"
             ></v-pagination>
           </div>
         </template>
@@ -48,7 +48,6 @@
 import Header from "@/components/Header";
 import axiosBase from "axios";
 
-// const PAGE_SIZE = 5;
 const axios = axiosBase.create({
   headers: {
     "Content-Type": "application/json",
@@ -70,11 +69,13 @@ export default {
       lists: [],
       displayLists: [],
       pageSize: 10,
+      pagenationLength: 0,
     };
   },
   computed: {
     recipesDisplay() {
       const display = [];
+
       if (!this.recipes) {
         return display;
       }
@@ -91,8 +92,13 @@ export default {
     to(recipe) {
       return `/recipe/${recipe.id}`;
     },
-    getNumber(number) {
+    async getPage(number) {
       console.log(number);
+      const response = await axios.get("/api/recipe/list", {
+        params: { page: number, user_id: this.$cookie.get("user_id") },
+      });
+      this.recipes = response.data.recipes;
+      console.log(response);
     },
     async submitClick(event) {
       if (this.text == "") {
@@ -100,12 +106,12 @@ export default {
       } else {
         console.log("false");
         event.preventDefault();
-        const response = await axios.get("/api/recipe/", {
-        params: { page: 1 },
+        const response = await axios.get("/api/recipe/list", {
+          params: { page: 1 },
         });
         // console.log(this.text);
         // console.log(response.data);
-        this.recipes = response.data.filter((data) => {
+        this.recipes = response.data.recipes.filter((data) => {
           // return this.text.match(data.name);
           return data.name.indexOf(this.text) > -1;
         });
@@ -114,10 +120,12 @@ export default {
     },
   },
   async mounted() {
-    const response = await axios.get("/api/recipe/", {
-      params: { page: 1 },
+    const response = await axios.get("/api/recipe/list", {
+      params: { page: 1, user_id: this.$cookie.get("user_id") },
     });
-    this.recipes = response.data;
+    this.recipes = response.data.recipes;
+    const count = response.data.count;
+    this.pagenationLength = Math.ceil(count / 6);
     console.log(response);
   },
 };
@@ -131,7 +139,7 @@ export default {
 
 img {
   position: relative;
-  max-height: 200px;
+  max-height: 150px;
 }
 
 a {

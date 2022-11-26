@@ -1,5 +1,4 @@
 <template>
-  <!-- <Header /> -->
   <v-container>
     <Header />
     <v-main>
@@ -9,18 +8,27 @@
         </v-btn>
       </v-col>
       <v-col
-            class="ma-10 list"
-            cols="4"
-            xs="3"
-            md="2"
-            lg="3"
-            xl="3"
-            v-for="recipe in recipesDisplay"
-            :key="recipe.id"
-          >
-            <router-link :to="to(recipe)">{{ recipe.name }}</router-link>
-            <img :src="recipe.image" />
+        class="ma-10 list"
+        cols="4"
+        xs="3"
+        md="2"
+        lg="3"
+        xl="3"
+        v-for="recipe in recipesDisplay"
+        :key="recipe.id"
+      >
+        <router-link :to="to(recipe)">{{ recipe.name }}</router-link>
+        <img :src="recipe.image" />
       </v-col>
+      <template>
+        <div class="text-center">
+          <v-pagination
+            v-model="page"
+            :length="2"
+            @input="getPage"
+          ></v-pagination>
+        </div>
+      </template>
     </v-main>
   </v-container>
 </template>
@@ -57,7 +65,15 @@ export default {
   },
   methods: {
     to(recipe) {
-      return `/recipe/${recipe.id}`;
+      return `/recipe/favorite/${recipe.id}`;
+    },
+    async getPage(number) {
+      console.log(number);
+      const response = await axios.get("/api/recipe/list", {
+        params: { page: number },
+      });
+      this.recipes = response.data.recipes;
+      console.log(response);
     },
   },
   computed: {
@@ -77,16 +93,14 @@ export default {
   },
 
   async mounted() {
-     
-    const response = await axios.get("/api/recipe/", {
+    const response = await axios.get("/api/recipe/favorite/list", {
       params: { page: 1 },
     });
     //  if(this.recipe.favorite == "1"){
-    this.recipes = response.data;
+    this.recipes = response.data.recipes;
     console.log(response);
     //   }
-    
+    console.log(this.recipe.favorite);
   },
 };
 </script>
-

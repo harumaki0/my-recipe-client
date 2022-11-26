@@ -71,7 +71,7 @@ export default {
     items: ["クラシル", "クックパッド", "Derish kitchen", "YouTube", "その他"],
     name: "",
     message: "",
-    imageFile: null,
+    imageFile: [],
     reference: "",
     memo: "",
     favorite: "0",
@@ -84,7 +84,7 @@ export default {
         //料理名が空の場合エラー表示
         this.message = "※料理名を入力してください。";
         console.log(this.message);
-      } else if (this.items == []) {
+      } else if (!this.reference) {
         console.log(2);
         //参照サイトが空の場合エラー表示
         this.message = "※参照サイトを選択してください。";

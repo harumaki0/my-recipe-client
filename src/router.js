@@ -1,77 +1,90 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '@/views/Home.vue'
-import Favorite from '@/views/Favorite.vue'
-import Calendar from '@/views/Calendar.vue'
-import Login from '@/views/Login.vue'
-import Signup from '@/views/Signup.vue'
+import Vue from "vue";
+import VueRouter from "vue-router";
+import Home from "@/views/Home.vue";
+import Favorite from "@/views/Favorite.vue";
+import Calendar from "@/views/Calendar.vue";
+import Login from "@/views/Login.vue";
+import Signup from "@/views/Signup.vue";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: "/",
+    name: "Home",
+    component: Home,
   },
   {
-    path: '/recipe',
-    name: 'Recipe',
+    path: "/recipe",
+    name: "Recipe",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ './views/Recipe.vue')
+    component: () =>
+      import(/* webpackChunkName: "about" */ "./views/Recipe.vue"),
   },
   {
-    path: '/recipe/:id',
-    name: 'RecipePage',
+    path: "/recipe/:id",
+    name: "RecipePage",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ './views/RecipePage.vue')
+    component: () =>
+      import(/* webpackChunkName: "about" */ "./views/RecipePage.vue"),
   },
   {
-    path: '/admin/recipe',
-    name: 'AdminRecipe',
+    path: "/recipe/favorite/:id",
+    name: "RecipePage",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ './views/Admin/Recipe.vue')
+    component: () =>
+      import(/* webpackChunkName: "about" */ "./views/RecipePage.vue"),
   },
   {
-    path: '/admin/recipe/:id',
-    name: 'AdminRecipePage',
+    path: "/admin/recipe",
+    name: "AdminRecipe",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ './views/Admin/RecipePage.vue')
+    component: () =>
+      import(/* webpackChunkName: "about" */ "./views/Admin/Recipe.vue"),
   },
   {
-    path: '/favorite',
-    name: 'Favorite',
-    component: Favorite
+    path: "/admin/recipe/:id",
+    name: "AdminRecipePage",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "about" */ "./views/Admin/RecipePage.vue"),
   },
   {
-    path: '/calendar',
-    name: 'Calendar',
-    component: Calendar
+    path: "/favorite",
+    name: "Favorite",
+    component: Favorite,
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: Login
+    path: "/calendar",
+    name: "Calendar",
+    component: Calendar,
   },
   {
-    path: '/signup',
-    name: 'Signup',
-    component: Signup
+    path: "/login",
+    name: "Login",
+    component: Login,
   },
-]
+  {
+    path: "/signup",
+    name: "Signup",
+    component: Signup,
+  },
+];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;
