@@ -12,12 +12,12 @@
               dense
               v-model="text"
             ></v-text-field>
-            <v-btn @click="submitClick">検索</v-btn>
+            <v-btn color="#ff5252" @click="submitClick">検索</v-btn>
           </v-col>
         </v-row>
         <v-row>
           <v-col
-            class="ma-10 list"
+            class="ma-10 list title"
             cols="4"
             xs="3"
             md="2"
@@ -132,19 +132,17 @@ export default {
 </script>
 
 <style>
-.title h1 {
-  font-size: 48px;
-  color: #192e46;
-}
+/* .theme--light.v-btn {
+  color: #fff;
+} */
 
 img {
   position: relative;
-  max-height: 150px;
+  max-height: 200px;
 }
 
-a {
-  font-family: initial;
-  color: black !important;
+.title a {
+  font-weight: bold;
 }
 
 .list {

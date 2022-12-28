@@ -10,10 +10,14 @@
         </v-btn>
       </v-col>
       <v-col>
-        <v-btn>編集</v-btn>
+        <template>
+          <v-btn color="#528fff" @click="selectRecipe(recipe)"> 編集 </v-btn>
+        </template>
         <v-dialog v-model="dialog" width="400">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn class="ml-3" v-bind="attrs" v-on="on"> 削除 </v-btn>
+            <v-btn color="#ff5252" class="ml-3" v-bind="attrs" v-on="on">
+              削除
+            </v-btn>
           </template>
           <v-card>
             <v-card-title>
@@ -27,13 +31,11 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-        <v-btn
-          icon
-          @click="changeFavorite()"
-          v-bind:class="{ buttoncolor: buttonState }"
-        >
-          <v-icon>mdi-heart</v-icon>
-        </v-btn>
+        <span @click="changeFavorite()">
+          <v-btn icon :class="{ buttoncolor: buttonState }">
+            <v-icon>mdi-heart</v-icon>
+          </v-btn>
+        </span>
       </v-col>
       <h1>{{ recipe.name }}</h1>
       <img :src="recipe.image" />
@@ -66,9 +68,18 @@ export default {
       buttonState: false,
       id: "",
       isFavorite: false,
+      color: "red",
+      recipes: [],
     };
   },
   methods: {
+    selectRecipe(recipe) {
+      // 選択した recipe.id をクエリパラメータとして渡す
+      this.$router.push({
+        path: `/recipeEdit/${recipe.id}`,
+        query: { id: recipe.id },
+      });
+    },
     async changeFavorite() {
       try {
         this.buttonState = !this.buttonState;
@@ -109,6 +120,9 @@ export default {
       params: { id: this.$route.params.id },
     });
     this.recipe = response.data;
+    if (this.recipe.favorite == 1) {
+      this.buttonState = true;
+    }
   },
 };
 </script>
@@ -119,6 +133,13 @@ export default {
 }
 
 .buttoncolor i {
-  color: rgb(163, 67, 109) !important;
+  color: rgb(255, 46, 74) !important;
+}
+
+.false {
+  color: none;
+}
+.now {
+  color: blue;
 }
 </style>

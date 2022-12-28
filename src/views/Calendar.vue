@@ -1,159 +1,100 @@
 <template>
-  <v-container>
+  <v-container overflow: hidden>
     <Header />
     <v-main>
-      <v-row class="fill-height">
-        <v-col>
-          <v-sheet height="64">
-            <v-toolbar flat>
-              <v-btn
-                outlined
-                class="mr-4"
-                color="grey darken-2"
-                @click="setToday"
-              >
-                Today
-              </v-btn>
-              <v-btn fab text small color="grey darken-2" @click="prev">
-                <v-icon small> mdi-chevron-left </v-icon>
-              </v-btn>
-              <v-btn fab text small color="grey darken-2" @click="next">
-                <v-icon small> mdi-chevron-right </v-icon>
-              </v-btn>
-              <v-toolbar-title v-if="$refs.calendar">
-                {{ $refs.calendar.title }}
-              </v-toolbar-title>
-              <v-spacer></v-spacer>
-            </v-toolbar>
-          </v-sheet>
-          <v-sheet height="600">
-            <v-calendar
-              ref="calendar"
-              v-model="focus"
-              color="#ff5d94"
-              :events="events"
-              :event-color="getEventColor"
-              :type="type"
-              @click:event="showEvent"
-              @change="updateRange"
-            ></v-calendar>
-            <v-menu
-              v-model="selectedOpen"
-              :close-on-content-click="false"
-              :activator="selectedElement"
-              offset-x
-            >
-              <v-card color="grey lighten-4" min-width="350px" flat>
-                <v-toolbar :color="selectedEvent.color" dark>
-                  <v-toolbar-title
-                    v-html="selectedEvent.name"
-                  ></v-toolbar-title>
-                  <v-spacer></v-spacer>
-                  <v-btn icon>
-                    <v-icon>mdi-heart</v-icon>
-                  </v-btn>
-                </v-toolbar>
-                <v-card-text>
-                  <span v-html="selectedEvent.details"></span>
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn text color="secondary" @click="selectedOpen = false">
-                    Cancel
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-menu>
-          </v-sheet>
-        </v-col>
-      </v-row>
+      <template>
+        <v-app>
+          <v-btn
+            fab
+            text
+            small
+            color="grey darken-2"
+            @click="prev"
+          >
+            <v-icon small>
+              mdi-chevron-left
+            </v-icon>
+          </v-btn>
+          <v-btn
+            fab
+            text
+            small
+            color="grey darken-2"
+            @click="next"
+          >
+            <v-icon small>
+              mdi-chevron-right
+            </v-icon>
+            <v-toolbar-title v-if="$refs.calendar">
+            {{ $refs.calendar.title }}
+          </v-toolbar-title>
+          </v-btn>
+          <v-calendar
+            :calendar="calendar"
+            :events="calendarEvents"
+            :height="300"
+            :width="600"
+          />
+        </v-app>
+      </template>
     </v-main>
-    <Footer />
   </v-container>
 </template>
 <script>
 import Header from "@/components/Header";
+import axios from "axios";
+import { vCalendar } from "vuetify/lib";
 
 export default {
+  name: "MyCalendar",
   components: {
+    vCalendar,
     Header,
   },
-  data: () => ({
-    focus: "",
-    type: "month",
-    typeToLabel: {
-      month: "Month",
-    },
-    selectedEvent: {},
-    selectedElement: null,
-    selectedOpen: false,
-    events: [],
-    colors: ["#a7d5e0"],
-    names: ["料理名"],
-  }),
-  mounted() {
-    this.$refs.calendar.checkChange();
+  data() {
+    return {
+      calendar: new Date(),
+      calendarEvents: [],
+    };
   },
+  
   methods: {
-    getEventColor(event) {
-      return event.color;
-    },
-    setToday() {
-      this.focus = "";
-    },
-    prev() {
-      this.$refs.calendar.prev();
-    },
-    next() {
-      this.$refs.calendar.next();
-    },
-    showEvent({ nativeEvent, event }) {
-      const open = () => {
-        this.selectedEvent = event;
-        this.selectedElement = nativeEvent.target;
-        requestAnimationFrame(() =>
-          requestAnimationFrame(() => (this.selectedOpen = true))
-        );
-      };
+    async getAllRecipes() {
+      // レシピデータを取得
+      const response = await axios.get("/api/recipe/all");
+      let recipes = response.data;
 
-      if (this.selectedOpen) {
-        this.selectedOpen = false;
-        requestAnimationFrame(() => requestAnimationFrame(() => open()));
-      } else {
-        open();
-      }
+      // レシピデータを日付順に並び替える
+      recipes = recipes.sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      );
 
-      nativeEvent.stopPropagation();
+      // レシピデータを元にカレンダーに表示するイベントを作成
+      recipes.forEach((recipe) => {
+        // レシピの登録日を取得
+        const recipeDate = new Date(recipe.registration_date);
+
+        // イベントオブジェクトを作成
+        const event = {
+          start: recipeDate,
+          end: recipeDate,
+          name: recipe.name,
+        };
+        // イベントオブジェクトをカレンダーに表示するための配列に追加
+        this.calendarEvents.push(event);
+      });
     },
-    updateRange({ start, end }) {
-      const events = [];
+    prev () {
+        this.$refs.calendar.prev()
+      },
+      next () {
+        this.$refs.calendar.next()
+      },
+  },
 
-      const min = new Date(`${start.date}T00:00:00`);
-      const max = new Date(`${end.date}T23:59:59`);
-      const days = (max.getTime() - min.getTime()) / 86400000;
-      const eventCount = this.rnd(days, days + 20);
-
-      for (let i = 0; i < eventCount; i++) {
-        const allDay = this.rnd(0, 3) === 0;
-        const firstTimestamp = this.rnd(min.getTime(), max.getTime());
-        const first = new Date(firstTimestamp - (firstTimestamp % 900000));
-        const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000;
-        const second = new Date(first.getTime() + secondTimestamp);
-
-        events.push({
-          name: this.names[this.rnd(0, this.names.length - 1)],
-          start: first,
-          end: second,
-          color: this.colors[this.rnd(0, this.colors.length - 1)],
-          timed: !allDay,
-        });
-      }
-
-      this.events = events;
-    },
-    //登録日付の料理名
-    rnd(a, b) {
-      return Math.floor((b - a + 1) * Math.random()) + a;
-    },
+  mounted() {
+    this.getAllRecipes();
+    console.log(this.getAllRecipes);
   },
 };
 </script>

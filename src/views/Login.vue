@@ -4,6 +4,9 @@
       <v-container>
         <h3>ログイン</h3>
       </v-container>
+      <v-col>
+        <router-link to="/signup">サインアップ</router-link>
+      </v-col>
       <v-container>
         <v-col cols="4">
           <v-text-field
@@ -31,7 +34,18 @@
         </v-col>
         <v-col>
           <p class="red--text">{{ message }}</p>
-          <v-btn @click="sendClick()">ログイン</v-btn>
+          <v-btn color="#ff5252" @click="sendClick()">ログイン</v-btn>
+        </v-col>
+        <v-col>
+          <v-dialog v-model="showModal" persistent max-width="300px">
+            <v-card>
+              <v-card-title>{{ errorMessage }}</v-card-title>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" @click="showModal = false">閉じる</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-col>
       </v-container>
     </v-main>
@@ -59,23 +73,31 @@ export default {
       min: (v) => v.length >= 8 || "Min 8 characters",
       emailMatch: () => `The email and password you entered don't match`,
     },
+    errorMessage: "",
+    showModal: false,
   }),
 
   methods: {
     async sendClick() {
-      const myObj = {
-        mail_address: this.mailAddress,
-        password: this.password,
-      };
-      const myObjStr = JSON.stringify(myObj);
-      console.log(myObjStr);
-      const response = await axios.post("/api/login", myObjStr);
-      console.log(response.data);
-      if (response.data?.id) {
-        this.$cookie.set("user_id", response.data.id, 1);
-        this.$router.push("/");
-      } else {
-        //TODO エラーメッセージを出す
+      try {
+        const myObj = {
+          mail_address: this.mailAddress,
+          password: this.password,
+        };
+        const myObjStr = JSON.stringify(myObj);
+        console.log(myObjStr);
+        const response = await axios.post("/api/user/login", myObjStr);
+        console.log(response.data);
+        if (response.data?.id) {
+          this.$cookie.set("user_id", response.data.id, 1);
+          this.$router.push("/");
+        } else {
+          this.errorMessage =
+            "メールアドレスまたはパスワードが間違っています。";
+        }
+      } catch (error) {
+        this.errorMessage = "サーバーエラーが発生しました。";
+        this.showModal = true; // モーダルを表示する
       }
     },
   },

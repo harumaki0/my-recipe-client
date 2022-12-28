@@ -43,8 +43,24 @@
         <v-row>
           <v-col justify="center">
             <p class="red--text">{{ message }}</p>
-            <v-btn @click="sendClick()">登録</v-btn>
+            <v-btn color="#ff5252" @click="sendClick()">登録</v-btn>
           </v-col>
+        </v-row>
+        <v-row>
+          <v-dialog v-model="modal" max-width="500">
+            <v-card>
+              <v-card-title>
+                <span class="headline">{{ message2 }}</span>
+              </v-card-title>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" text @click="modal = false"
+                  >閉じる</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-row>
       </v-container>
     </v-main>
@@ -75,6 +91,9 @@ export default {
     reference: "",
     memo: "",
     favorite: "0",
+    user_id: "",
+    modal: false,
+    message2: "",
   }),
   methods: {
     async sendClick() {
@@ -97,6 +116,7 @@ export default {
         const day = now.getDate();
         const today = year + "-" + month + "-" + day;
 
+        // const id = response.user.id;
         const formData = new FormData();
         formData.append("file", this.imageFile[0]);
         formData.append("name", this.name);
@@ -104,17 +124,24 @@ export default {
         formData.append("memo", this.memo);
         formData.append("favorite", this.favorite);
         formData.append("registration_date", today);
+        formData.append("user_id", this.user_id);
         const response = await axios.post("/api/recipe", formData, {
           headers: {
             "content-type": "multipart/form-data",
           },
         });
         console.log(response.data);
+        this.modal = true;
+        this.message2 = "登録が完了しました。";
       }
     },
     onFileChange(event) {
       this.imageFile = event.target.files || event.dataTransfer.files;
     },
+  },
+  async mounted() {
+    this.user_id = this.$cookie.get("user_id");
+    console.log(this.user_id);
   },
 };
 </script>

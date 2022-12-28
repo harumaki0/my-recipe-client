@@ -5,6 +5,7 @@ import Favorite from "@/views/Favorite.vue";
 import Calendar from "@/views/Calendar.vue";
 import Login from "@/views/Login.vue";
 import Signup from "@/views/Signup.vue";
+import RecipeEdit from "@/views/RecipeEdit.vue";
 
 Vue.use(VueRouter);
 
@@ -17,47 +18,12 @@ const routes = [
   {
     path: "/recipe",
     name: "Recipe",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "./views/Recipe.vue"),
+    component: () => import("@/views/Recipe.vue"),
   },
   {
     path: "/recipe/:id",
     name: "RecipePage",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "./views/RecipePage.vue"),
-  },
-  {
-    path: "/recipe/favorite/:id",
-    name: "RecipePage",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "./views/RecipePage.vue"),
-  },
-  {
-    path: "/admin/recipe",
-    name: "AdminRecipe",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "./views/Admin/Recipe.vue"),
-  },
-  {
-    path: "/admin/recipe/:id",
-    name: "AdminRecipePage",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "./views/Admin/RecipePage.vue"),
+    component: () => import("@/views/RecipePage.vue"),
   },
   {
     path: "/favorite",
@@ -78,6 +44,11 @@ const routes = [
     path: "/signup",
     name: "Signup",
     component: Signup,
+  },
+  {
+    path: "/recipeEdit/:id",
+    name: "recipeEdit",
+    component: RecipeEdit,
   },
 ];
 
